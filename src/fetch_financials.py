@@ -13,6 +13,7 @@ import uuid
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from config.companies import COMPANY_BASKET
 from src.db import get_conn, log_step
+from src.qa_checks import check_restatements, init_qa_tables
 
 try:
     import yfinance as yf
@@ -41,11 +42,24 @@ def fetch_financials_for_ticker(ticker: str):
 def run(run_id: str = None):
     run_id = run_id or str(uuid.uuid4())[:8]
     total_rows = 0
+    init_qa_tables()  # ensures `restatements` table exists
 
     with get_conn() as conn:
         for ticker in COMPANY_BASKET:
             try:
                 rows = fetch_financials_for_ticker(ticker)
+
+                # Catch restatements BEFORE the old value is overwritten.
+                # check_restatements() compares incoming rows against
+                # what's currently stored and logs any changed value to
+                # the `restatements` table - it must run before the
+                # INSERT OR REPLACE below, not after, or the old value
+                # is already gone.
+                restatement_results = check_restatements(conn, rows)
+                for r in restatement_results:
+                    if r.status == "warn":
+                        print(f"[financials] {ticker}: RESTATEMENT DETECTED - {r.detail}")
+
                 conn.executemany(
                     "INSERT OR REPLACE INTO financials "
                     "(ticker, period_end, period_type, total_revenue, net_income) "
@@ -54,10 +68,10 @@ def run(run_id: str = None):
                 )
                 total_rows += len(rows)
                 print(f"[financials] {ticker}: {len(rows)} periods pulled")
-                log_step(run_id, "fetch_financials", "success", len(rows), ticker)
+                log_step(run_id, "fetch_financials", "success", len(rows), ticker, conn=conn)
             except Exception as e:
                 print(f"[financials] {ticker}: FAILED - {e}")
-                log_step(run_id, "fetch_financials", "error", 0, f"{ticker}: {e}")
+                log_step(run_id, "fetch_financials", "error", 0, f"{ticker}: {e}", conn=conn)
 
     print(f"Total financial rows written: {total_rows}")
     return total_rows
