@@ -13,6 +13,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from src.db import init_db, get_conn
 from src import fetch_financials, fetch_macro, fetch_sec_filings, fetch_trends
+from src.qa_checks import run_all_checks, print_summary
 
 STEPS = {
     "financials": fetch_financials.run,
@@ -55,6 +56,17 @@ def main():
         for table in ("financials", "macro", "sec_filings", "trends"):
             count = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
             print(f"  [{table}] total rows in DB: {count}")
+
+    # Epic 2: run QA gate automatically after ingestion, before anything
+    # downstream (features/models/dashboard) is allowed to use this data
+    print("\n=== Running QA Gate ===")
+    qa_results = run_all_checks(run_id=run_id)
+    print_summary(qa_results)
+
+    if any(r.status == "fail" for r in qa_results):
+        print(f"\nPipeline run {run_id} completed with QA FAILURES. Review before downstream use.")
+    else:
+        print(f"\nPipeline run {run_id} completed. Data cleared for downstream use (see any warnings above).")
 
 
 if __name__ == "__main__":
