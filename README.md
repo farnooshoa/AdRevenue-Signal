@@ -1,4 +1,4 @@
-# AdRevenue Signal — Epic 1: Data Foundation & Pipeline
+# AdRevenue Signal: Epic 1: Data Foundation & Pipeline
 
 Ingestion pipeline for structured + unstructured data used to forecast
 advertising revenue trends for a basket of publicly traded companies.
