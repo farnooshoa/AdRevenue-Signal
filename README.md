@@ -57,18 +57,3 @@ python src/run_pipeline.py --skip trends
 | `sec` | SEC EDGAR | 10-Q/10-K filing metadata + doc URLs |
 | `trends` | Google Trends (pytrends) | Search interest for ad-industry keywords |
 
-## Notes / known limitations (be upfront about these — it shows rigor)
-
-- **yfinance** typically only exposes ~4-8 quarters of statement history for
-  free; for deeper history you'd need SEC EDGAR full-text data (a good
-  Epic 3 extension: parsing XBRL financial statement data directly).
-- **pytrends** is an unofficial wrapper around Google Trends and can be
-  rate-limited; add retry/backoff if you scale up keyword count.
-- Data quality checks (missing values, restatements, outliers) are
-  intentionally **not** in this epic — that's Epic 2: Data Quality & Governance.
-
-## Next: Epic 2
-
-Once this pipeline runs cleanly and the DB is populated, the next step is
-building automated QA checks and a data lineage doc on top of these same
-tables.
