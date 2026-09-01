@@ -1,0 +1,59 @@
+# Model Card Template — AdRevenue Signal
+
+Fill one of these out for any model/feature set before it's used in a
+client-facing product. This is the artifact a governance reviewer signs
+off on.
+
+---
+
+## 1. Overview
+
+- **Model/feature name:**
+- **Owner:**
+- **Date created / last updated:**
+- **Intended use:** (e.g. "Quarterly ad-revenue forecast for internal sales enablement, not a standalone investment signal")
+- **Out-of-scope use:** (explicitly state what this should NOT be used for)
+
+## 2. Data sources & lineage
+
+- List every table/source feeding this model (reference `data_dictionary.md`)
+- Date range of training data
+- Any known gaps, exclusions, or filtered subsets
+
+## 3. Data quality status at time of training
+
+- Paste the latest `qa_results` summary (pass/warn/fail counts)
+- Note any unresolved warnings and why they were judged acceptable to proceed with
+- Confirm: were any restatements detected in the training window? How were they handled?
+
+## 4. Features
+
+| Feature | Source table | Transformation | Hypothesis rationale |
+|---|---|---|---|
+| | | | |
+
+## 5. Model details
+
+- **Algorithm:**
+- **Baseline compared against:**
+- **Evaluation metric(s):**
+- **Backtest performance vs. baseline:**
+- **Known failure modes:** (e.g. "underperforms during earnings-surprise quarters")
+
+## 6. Limitations & assumptions
+
+- Explicitly state assumptions (e.g. "assumes ad spend seasonality is stable year-over-year")
+- Note any data limitations carried from the data dictionary (e.g. yfinance revenue is company-wide, not ad-segment-specific)
+
+## 7. Regulatory / compliance notes
+
+- Any relevant disclosure requirements if this touches publicly traded company forecasts
+- Confirm this does not constitute investment advice, if applicable
+
+## 8. Sign-off
+
+| Role | Name | Date | Notes |
+|---|---|---|---|
+| Data Scientist |  |  |  |
+| Governance reviewer |  |  |  |
+| Product owner |  |  |  |
